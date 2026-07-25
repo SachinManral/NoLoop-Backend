@@ -1,0 +1,24 @@
+# virtualenv
+.venv/
+venv/
+
+# python caches
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# env (keep the example)
+.env
+.env*.local
+!.env.example
+
+# generated synthetic data
+data/synthetic/
+
+# misc
+.DS_Store
+Thumbs.db
+*.log
