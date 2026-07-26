@@ -20,6 +20,8 @@ class Role(str, enum.Enum):
     INSURER_ADMIN = "INSURER_ADMIN"
     HOSPITAL_STAFF = "HOSPITAL_STAFF"
     INSURER_ADJUDICATOR = "INSURER_ADJUDICATOR"
+    TPA_ADMIN = "TPA_ADMIN"          # insurer-side: TPA acting for an insurer tenant
+    TPA_REVIEWER = "TPA_REVIEWER"    # insurer-side: TPA reviewer, parity with adjudicator
     PATIENT = "PATIENT"
 
 

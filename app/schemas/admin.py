@@ -7,7 +7,8 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 _StaffOrAdminRole = Literal[
-    "HOSPITAL_ADMIN", "INSURER_ADMIN", "HOSPITAL_STAFF", "INSURER_ADJUDICATOR"
+    "HOSPITAL_ADMIN", "INSURER_ADMIN", "HOSPITAL_STAFF", "INSURER_ADJUDICATOR",
+    "TPA_ADMIN", "TPA_REVIEWER",
 ]
 
 
