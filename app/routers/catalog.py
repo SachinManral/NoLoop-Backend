@@ -12,7 +12,12 @@ from app.services import catalog_service
 
 router = APIRouter(tags=["catalog"])
 
-_insurer_guard = require_roles(Role.INSURER_ADMIN.value, Role.INSURER_ADJUDICATOR.value)
+_insurer_guard = require_roles(
+    Role.INSURER_ADMIN.value,
+    Role.INSURER_ADJUDICATOR.value,
+    Role.TPA_ADMIN.value,
+    Role.TPA_REVIEWER.value,
+)
 
 
 @router.get("/catalog/insurers")
@@ -24,6 +29,8 @@ async def insurers(
             Role.PLATFORM_ADMIN.value,
             Role.INSURER_ADMIN.value,
             Role.INSURER_ADJUDICATOR.value,
+            Role.TPA_ADMIN.value,
+            Role.TPA_REVIEWER.value,
         )
     ),
     session: AsyncSession = Depends(get_session),

@@ -19,10 +19,16 @@ _all_roles = require_roles(
     Role.HOSPITAL_STAFF.value,
     Role.INSURER_ADMIN.value,
     Role.INSURER_ADJUDICATOR.value,
+    Role.TPA_ADMIN.value,
+    Role.TPA_REVIEWER.value,
     Role.PLATFORM_ADMIN.value,
 )
 _insurer = require_roles(
-    Role.INSURER_ADMIN.value, Role.INSURER_ADJUDICATOR.value, Role.PLATFORM_ADMIN.value
+    Role.INSURER_ADMIN.value,
+    Role.INSURER_ADJUDICATOR.value,
+    Role.TPA_ADMIN.value,
+    Role.TPA_REVIEWER.value,
+    Role.PLATFORM_ADMIN.value,
 )
 
 

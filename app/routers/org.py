@@ -1,4 +1,4 @@
-"""Org-admin self-service routes (HOSPITAL_ADMIN / INSURER_ADMIN)."""
+"""Org-admin self-service routes (HOSPITAL_ADMIN / INSURER_ADMIN / TPA_ADMIN)."""
 
 from __future__ import annotations
 
@@ -11,7 +11,9 @@ from app.models import Role
 from app.schemas.org import CreateEmployeeBody
 from app.services import org_service
 
-_guard = require_roles(Role.HOSPITAL_ADMIN.value, Role.INSURER_ADMIN.value)
+_guard = require_roles(
+    Role.HOSPITAL_ADMIN.value, Role.INSURER_ADMIN.value, Role.TPA_ADMIN.value
+)
 
 router = APIRouter(prefix="/org", tags=["org"])
 
