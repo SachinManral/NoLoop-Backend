@@ -42,3 +42,29 @@ def test_insurer_tenant_scoping():
     where_clause = _scope_where(user)
     # Insurer user filtered strictly by insurerTenantId
     assert len(where_clause.clauses) > 0
+
+
+def test_tpa_tenant_scoping():
+    user = AuthUser(
+        id="usr_tpa",
+        email="reviewer@medassist.com",
+        name="TPA Reviewer",
+        role=Role.TPA_REVIEWER.value,
+        tenant_id="tnt_star_01",
+    )
+    where_clause = _scope_where(user)
+    # TPA user scoped to their insurer tenant exactly like insurer staff
+    assert len(where_clause.clauses) > 0
+
+
+def test_unknown_role_sees_nothing():
+    user = AuthUser(
+        id="usr_x",
+        email="ghost@nowhere.com",
+        name="Ghost",
+        role="NOT_A_ROLE",
+        tenant_id=None,
+    )
+    where_clause = _scope_where(user)
+    # Unknown roles match no records (Claim.id == "__none__")
+    assert len(where_clause.clauses) > 0

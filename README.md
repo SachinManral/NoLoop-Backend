@@ -3,8 +3,8 @@
 A faithful Python rewrite of the NestJS API. It is **wire-compatible** with the
 original: same routes, same camelCase JSON, the same JWT format (HS256 + shared
 `JWT_SECRET`), bcrypt password compatibility, and the same Postgres/Supabase
-database (no schema changes). The `web` (:3000) and `admin` (:3001) frontends and
-the `ai` engine (:8000) run unchanged against it on **:4000**.
+database (no schema changes). The web (:3000), admin (:3001), hospital (:3002),
+insurer (:3003), patient (:3004), and ai-engine (:8000) services run against it on **:4000**.
 
 ## Architecture
 
@@ -26,7 +26,7 @@ Layering is `routers → services → models`, mirroring NestJS controller/servi
 ## Setup
 
 ```bash
-cd noloop-app/backend-py
+cd backend-py
 python -m venv .venv && source .venv/bin/activate   # or: py -m venv .venv
 pip install -e .                                    # installs from pyproject.toml
 
@@ -55,9 +55,3 @@ python scripts/create_platform_admin.py admin@noloop.in 'StrongPass123'
 python scripts/seed_demo.py                 # honours $AI_ENGINE_URL
 python scripts/generate_synthetic_claims.py 20 42
 ```
-
-## Relationship to the old backend
-
-The original NestJS backend still lives in `../backend/` untouched. Run whichever
-you like on :4000 — both speak the same protocol against the same database. Once
-you're satisfied with parity, the old one can be removed.

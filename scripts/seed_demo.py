@@ -234,6 +234,9 @@ async def main() -> None:
             User(email="adjudicator.everwellassurance@noloop.in", name="Asha Verma",
                  password_hash=hash_password("Adjudicator@123"),
                  role=Role.INSURER_ADJUDICATOR, tenant_id=insurer.id),
+            User(email="tpa.everwellassurance@noloop.in", name="Rohit Nair",
+                 password_hash=hash_password("Tpa@12345"),
+                 role=Role.TPA_REVIEWER, tenant_id=insurer.id),
         ])
 
         hospital = Tenant(name=HOSPITAL_NAME, type=TenantType.HOSPITAL)
@@ -447,7 +450,8 @@ async def main() -> None:
     print("   Hospital admin:  meadowpine.hospital@noloop.in  /  Hospital@123")
     print("   Hospital staff:  nurse.meadowpinehospital@noloop.in  /  Staff@123")
     print("   Insurer admin:   everwell.assurance@noloop.in  /  Insurer@123")
-    print("   Adjudicator:     adjudicator.everwellassurance@noloop.in  /  Adjudicator@123\n")
+    print("   Adjudicator:     adjudicator.everwellassurance@noloop.in  /  Adjudicator@123")
+    print("   TPA reviewer:    tpa.everwellassurance@noloop.in  /  Tpa@12345\n")
 
 
 if __name__ == "__main__":
