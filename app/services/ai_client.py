@@ -1,4 +1,4 @@
-"""Bridge to the NoLoop AI adjudication engine (Python/FastAPI, noloop-app/ai).
+"""Bridge to the NoLoop AI adjudication engine (Python/FastAPI, ai-engine).
 
 Primary path: POST the claim packet to the engine's /adjudicate endpoint.
 Resilience: if the engine is unreachable, fall back to an in-process rule

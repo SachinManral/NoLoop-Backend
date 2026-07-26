@@ -73,7 +73,12 @@ def _scope_where(user: AuthUser):
         return None
     if role in (Role.HOSPITAL_ADMIN.value, Role.HOSPITAL_STAFF.value):
         return Claim.hospital_tenant_id == (tenant_id or "__none__")
-    if role in (Role.INSURER_ADMIN.value, Role.INSURER_ADJUDICATOR.value):
+    if role in (
+        Role.INSURER_ADMIN.value,
+        Role.INSURER_ADJUDICATOR.value,
+        Role.TPA_ADMIN.value,
+        Role.TPA_REVIEWER.value,
+    ):
         return Claim.insurer_tenant_id == (tenant_id or "__none__")
     return Claim.id == "__none__"
 
