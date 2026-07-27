@@ -53,13 +53,18 @@ ENUMS = [
 
 
 def _create_enum_sql(enum_cls) -> str:
-    """CREATE TYPE ... AS ENUM, guarded so re-runs don't error."""
+    """CREATE TYPE ... AS ENUM, guarded so re-runs don't error, and ADD VALUE for new options."""
     type_name = enum_cls.__name__
     values = ", ".join(f"'{m.value}'" for m in enum_cls)
+    add_values = "\n".join(
+        f"  ALTER TYPE \"{type_name}\" ADD VALUE IF NOT EXISTS '{m.value}';" for m in enum_cls
+    )
     return (
         "DO $$ BEGIN\n"
         f"  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = '{type_name}') THEN\n"
         f'    CREATE TYPE "{type_name}" AS ENUM ({values});\n'
+        "  ELSE\n"
+        f"{add_values}\n"
         "  END IF;\n"
         "END $$;"
     )
