@@ -19,9 +19,42 @@ class Base(DeclarativeBase):
     pass
 
 
+def gen_id(prefix: str = "") -> str:
+    """Generate clean, self-describing IDs (e.g., clm_..., tnt_..., pat_...)."""
+    c_val = cuid.cuid()
+    return f"{prefix}_{c_val}" if prefix else c_val
+
+
 def gen_cuid() -> str:
     """Prisma uses cuid() for ids; match the format for new rows."""
-    return cuid.cuid()
+    return gen_id()
+
+
+def gen_claim_id() -> str:
+    """Generate a clean, self-describing claim ID with clm_ prefix."""
+    return gen_id("clm")
+
+
+def gen_health_id(aadhaar: str | None = None) -> str:
+    """Generate a 14-digit lifetime ABHA-compatible Health ID (NL-HID-XXXX-XXXX-XXXX)."""
+    import hashlib
+    import random
+
+    if aadhaar and len(aadhaar.strip()) >= 4:
+        clean = "".join(c for c in aadhaar if c.isdigit())
+        h = hashlib.sha256(clean.encode("utf-8")).hexdigest()
+        n1 = int(h[0:4], 16) % 9000 + 1000
+        n2 = int(h[4:8], 16) % 9000 + 1000
+        n3 = int(h[8:12], 16) % 9000 + 1000
+        return f"NL-HID-{n1}-{n2}-{n3}"
+
+    n1 = random.randint(1000, 9999)
+    n2 = random.randint(1000, 9999)
+    n3 = random.randint(1000, 9999)
+    return f"NL-HID-{n1}-{n2}-{n3}"
+
+
+
 
 
 def utcnow() -> datetime:

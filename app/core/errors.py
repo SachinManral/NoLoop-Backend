@@ -48,6 +48,11 @@ def not_found(message: str) -> ApiError:
     return ApiError(status.HTTP_404_NOT_FOUND, message)
 
 
+def conflict(message: str) -> ApiError:
+    return ApiError(status.HTTP_409_CONFLICT, message)
+
+
+
 def _body(status_code: int, message: str | list[str]) -> dict:
     return {
         "statusCode": status_code,

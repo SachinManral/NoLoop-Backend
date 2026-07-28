@@ -14,7 +14,7 @@ from sqlalchemy import Float, ForeignKey, Integer, Text
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base, gen_cuid, pg_enum, utcnow
+from app.models.base import Base, gen_claim_id, gen_cuid, gen_health_id, pg_enum, utcnow
 from app.models.enums import (
     AdmissionStatus,
     BedStatus,
@@ -121,7 +121,17 @@ class Patient(Base):
         "policyId", ForeignKey("Policy.id"), nullable=True
     )
     member_id: Mapped[str] = mapped_column("memberId", Text, unique=True)
+    health_id: Mapped[str] = mapped_column(
+        "healthId", Text, unique=True, default=gen_health_id
+    )
+    aadhaar_hash: Mapped[str | None] = mapped_column(
+        "aadhaarHash", Text, nullable=True, unique=True
+    )
+    aadhaar_last4: Mapped[str | None] = mapped_column(
+        "aadhaarLast4", Text, nullable=True
+    )
     name: Mapped[str] = mapped_column("name", Text)
+
     age: Mapped[int] = mapped_column("age", Integer)
     gender: Mapped[str] = mapped_column("gender", Text)
     phone: Mapped[str | None] = mapped_column("phone", Text, nullable=True)
@@ -202,7 +212,7 @@ class Admission(Base):
 class Claim(Base):
     __tablename__ = "Claim"
 
-    id: Mapped[str] = mapped_column("id", Text, primary_key=True, default=gen_cuid)
+    id: Mapped[str] = mapped_column("id", Text, primary_key=True, default=gen_claim_id)
     claim_number: Mapped[str] = mapped_column("claimNumber", Text, unique=True)
     type: Mapped[ClaimType] = mapped_column(
         "type", pg_enum(ClaimType, "ClaimType"), default=ClaimType.CASHLESS
