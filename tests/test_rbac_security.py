@@ -74,3 +74,17 @@ def test_unknown_role_sees_nothing():
     assert "id" in str(where_clause)
 
 
+def test_patient_scoping():
+    user = AuthUser(
+        id="usr_patient_01",
+        email="patient@gmail.com",
+        name="Patient",
+        role=Role.PATIENT.value,
+        tenant_id="tnt_patient_01",
+    )
+    where_clause = _scope_where(user)
+    assert where_clause is not None
+    assert "patientId" in str(where_clause) or "patient_id" in str(where_clause)
+
+
+

@@ -113,23 +113,36 @@ async def run_full_stack_integration_test():
             session.add(policy)
             await session.commit()
 
-        # Check or create Patient
-        patient = await session.get(Patient, patient_id)
-        if not patient:
-            patient = Patient(
-                id=patient_id,
+        # Register or retrieve Patient via patient_service with Aadhaar Card
+        from app.services import patient_service
+        try:
+            patient = await patient_service.register_patient(
+                session=session,
                 insurer_tenant_id=ins_tenant_id,
                 policy_id=policy_id,
-                member_id="MEM-E2E-101",
                 name="Integration Test Patient",
                 age=45,
                 gender="Male",
                 phone="9876543210",
+                aadhaar_number="367598341235",
+                member_id="MEM-E2E-101",
             )
-            session.add(patient)
-            await session.commit()
+        except Exception:
+            patient = await patient_service.lookup_by_aadhaar(session, "367598341235")
 
-        log.info("Seed data verified in PostgreSQL.")
+        patient_id = patient.id
+        log.info(
+            f"Patient Health ID Verified: {patient.health_id} "
+            f"(Aadhaar: {patient.aadhaar_last4})"
+        )
+
+
+        # Verify instant Aadhaar Card lookup
+        looked_up_patient = await patient_service.lookup_by_aadhaar(session, "367598341235")
+        assert looked_up_patient.health_id == patient.health_id
+        log.info(f"Instant Aadhaar Lookup Verified for {looked_up_patient.name} -> Health ID {looked_up_patient.health_id}")
+
+
 
         # 3. Create Claim Submission Body
         user = {
