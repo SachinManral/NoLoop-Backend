@@ -38,12 +38,14 @@ from app.routers import (
     health,
     metrics,
     org,
+    patients,
     track,
     whatsapp,
     workflow,
 )
 
 log = logging.getLogger("backend_main")
+
 
 ENUMS = [
     TenantType,
@@ -71,16 +73,27 @@ def _create_enum_sql(enum_cls) -> str:
     )
 
 
+ALTER_PATIENT_SQL = """
+DO $$ BEGIN
+    ALTER TABLE "Patient" ADD COLUMN IF NOT EXISTS "healthId" TEXT;
+    ALTER TABLE "Patient" ADD COLUMN IF NOT EXISTS "aadhaarHash" TEXT;
+    ALTER TABLE "Patient" ADD COLUMN IF NOT EXISTS "aadhaarLast4" TEXT;
+END $$;
+"""
+
+
 async def init_postgres_schema():
-    """Ensure all PostgreSQL enum types and tables exist on startup."""
+    """Ensure all PostgreSQL enum types, tables, and patient columns exist on startup."""
     try:
         async with engine.begin() as conn:
             for enum_cls in ENUMS:
                 await conn.execute(text(_create_enum_sql(enum_cls)))
             await conn.run_sync(Base.metadata.create_all)
+            await conn.execute(text(ALTER_PATIENT_SQL))
         log.info("PostgreSQL schema initialized successfully.")
     except Exception as err:
         log.warning("Postgres schema init note: %s", err)
+
 
 
 @asynccontextmanager
@@ -103,5 +116,6 @@ app.add_middleware(
 
 register_error_handlers(app)
 
-for module in (auth, admin, org, claims, track, beds, metrics, catalog, health, whatsapp, workflow):
+for module in (auth, admin, org, patients, claims, track, beds, metrics, catalog, health, whatsapp, workflow):
     app.include_router(module.router)
+
