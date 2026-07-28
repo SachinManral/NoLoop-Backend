@@ -14,8 +14,8 @@ def test_platform_admin_global_scope():
         tenant_id=None,
     )
     where_clause = _scope_where(user)
-    # Platform admin sees all records (empty condition)
-    assert len(where_clause.clauses) == 0
+    # Platform admin sees all records (empty condition: None)
+    assert where_clause is None
 
 
 def test_hospital_tenant_scoping():
@@ -28,7 +28,8 @@ def test_hospital_tenant_scoping():
     )
     where_clause = _scope_where(user)
     # Hospital user filtered strictly by hospitalTenantId
-    assert len(where_clause.clauses) > 0
+    assert where_clause is not None
+    assert "hospitalTenantId" in str(where_clause) or "hospital_tenant_id" in str(where_clause)
 
 
 def test_insurer_tenant_scoping():
@@ -41,7 +42,8 @@ def test_insurer_tenant_scoping():
     )
     where_clause = _scope_where(user)
     # Insurer user filtered strictly by insurerTenantId
-    assert len(where_clause.clauses) > 0
+    assert where_clause is not None
+    assert "insurerTenantId" in str(where_clause) or "insurer_tenant_id" in str(where_clause)
 
 
 def test_tpa_tenant_scoping():
@@ -54,7 +56,8 @@ def test_tpa_tenant_scoping():
     )
     where_clause = _scope_where(user)
     # TPA user scoped to their insurer tenant exactly like insurer staff
-    assert len(where_clause.clauses) > 0
+    assert where_clause is not None
+    assert "insurerTenantId" in str(where_clause) or "insurer_tenant_id" in str(where_clause)
 
 
 def test_unknown_role_sees_nothing():
@@ -67,4 +70,7 @@ def test_unknown_role_sees_nothing():
     )
     where_clause = _scope_where(user)
     # Unknown roles match no records (Claim.id == "__none__")
-    assert len(where_clause.clauses) > 0
+    assert where_clause is not None
+    assert "id" in str(where_clause)
+
+
