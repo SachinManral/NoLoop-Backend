@@ -1,49 +1,45 @@
 """Unit tests for Workflow Orchestrator (State Machine Guards)."""
 
 import pytest
-from fastapi import HTTPException
+from starlette.exceptions import HTTPException
 from app.models.enums import ClaimStatus
-from app.services.orchestrator import WorkflowOrchestrator
+from app.services.orchestrator import guard_transition
 
 
 def test_valid_state_transitions():
-    orch = WorkflowOrchestrator()
-
     # SUBMITTED -> VALIDATED
-    orch.guard_transition(ClaimStatus.SUBMITTED.value, ClaimStatus.VALIDATED.value)
+    guard_transition(ClaimStatus.SUBMITTED, ClaimStatus.VALIDATED)
 
     # VALIDATED -> POLICY_CHECK
-    orch.guard_transition(ClaimStatus.VALIDATED.value, ClaimStatus.POLICY_CHECK.value)
+    guard_transition(ClaimStatus.VALIDATED, ClaimStatus.POLICY_CHECK)
 
     # POLICY_CHECK -> FRAUD_CHECK
-    orch.guard_transition(ClaimStatus.POLICY_CHECK.value, ClaimStatus.FRAUD_CHECK.value)
+    guard_transition(ClaimStatus.POLICY_CHECK, ClaimStatus.FRAUD_CHECK)
 
     # FRAUD_CHECK -> UNDER_REVIEW
-    orch.guard_transition(ClaimStatus.FRAUD_CHECK.value, ClaimStatus.UNDER_REVIEW.value)
+    guard_transition(ClaimStatus.FRAUD_CHECK, ClaimStatus.UNDER_REVIEW)
 
     # UNDER_REVIEW -> APPROVED
-    orch.guard_transition(ClaimStatus.UNDER_REVIEW.value, ClaimStatus.APPROVED.value)
+    guard_transition(ClaimStatus.UNDER_REVIEW, ClaimStatus.APPROVED)
 
     # APPROVED -> SETTLED
-    orch.guard_transition(ClaimStatus.APPROVED.value, ClaimStatus.SETTLED.value)
+    guard_transition(ClaimStatus.APPROVED, ClaimStatus.SETTLED)
 
 
 def test_illegal_transition_rejection():
-    orch = WorkflowOrchestrator()
-
     # Direct SUBMITTED -> SETTLED should fail with 400
     with pytest.raises(HTTPException) as exc_info:
-        orch.guard_transition(ClaimStatus.SUBMITTED.value, ClaimStatus.SETTLED.value)
+        guard_transition(ClaimStatus.SUBMITTED, ClaimStatus.SETTLED)
 
     assert exc_info.value.status_code == 400
     assert "Invalid state transition" in exc_info.value.detail
 
 
 def test_terminal_state_rejection():
-    orch = WorkflowOrchestrator()
-
     # SETTLED is terminal
     with pytest.raises(HTTPException) as exc_info:
-        orch.guard_transition(ClaimStatus.SETTLED.value, ClaimStatus.UNDER_REVIEW.value)
+        guard_transition(ClaimStatus.SETTLED, ClaimStatus.UNDER_REVIEW)
 
     assert exc_info.value.status_code == 400
+
+
