@@ -164,6 +164,8 @@ def patient_with_counts(p: Patient, claims: int) -> dict:
         "insurerTenantId": p.insurer_tenant_id,
         "policyId": p.policy_id,
         "memberId": p.member_id,
+        "healthId": p.health_id,
+        "aadhaarLast4": p.aadhaar_last4,
         "name": p.name,
         "age": p.age,
         "gender": p.gender,
@@ -172,6 +174,7 @@ def patient_with_counts(p: Patient, claims: int) -> dict:
         "policy": {"name": p.policy.name} if p.policy else None,
         "_count": {"claims": claims},
     }
+
 
 
 # ── claims ───────────────────────────────────────────────────

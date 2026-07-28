@@ -69,6 +69,9 @@ def _scope_where(user: AuthUser):
     """Restrict a claim query to what this user may see (None = no filter)."""
     role = user.get("role")
     tenant_id = user.get("tenantId")
+    sub = user.get("sub")
+    patient_id = user.get("patientId")
+
     if role == Role.PLATFORM_ADMIN.value:
         return None
     if role in (Role.HOSPITAL_ADMIN.value, Role.HOSPITAL_STAFF.value):
@@ -80,7 +83,11 @@ def _scope_where(user: AuthUser):
         Role.TPA_REVIEWER.value,
     ):
         return Claim.insurer_tenant_id == (tenant_id or "__none__")
+    if role == Role.PATIENT.value:
+        pid = patient_id or sub
+        return Claim.patient_id == (pid or "__none__")
     return Claim.id == "__none__"
+
 
 
 async def _new_claim_number(session: AsyncSession) -> str:
@@ -93,6 +100,8 @@ async def _new_claim_number(session: AsyncSession) -> str:
         if not taken:
             return candidate
     return f"CLM-{int(time.time() * 1000)}"
+
+
 
 
 _DETAIL_LOAD = (
