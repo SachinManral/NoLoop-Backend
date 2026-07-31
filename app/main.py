@@ -83,16 +83,18 @@ END $$;
 
 
 async def init_postgres_schema():
-    """Ensure all PostgreSQL enum types, tables, and patient columns exist on startup."""
+    """Ensure all database enum types, tables, and patient columns exist on startup."""
     try:
         async with engine.begin() as conn:
-            for enum_cls in ENUMS:
-                await conn.execute(text(_create_enum_sql(enum_cls)))
+            if "postgresql" in str(engine.url):
+                for enum_cls in ENUMS:
+                    await conn.execute(text(_create_enum_sql(enum_cls)))
             await conn.run_sync(Base.metadata.create_all)
-            await conn.execute(text(ALTER_PATIENT_SQL))
-        log.info("PostgreSQL schema initialized successfully.")
+            if "postgresql" in str(engine.url):
+                await conn.execute(text(ALTER_PATIENT_SQL))
+        log.info("Database schema initialized successfully.")
     except Exception as err:
-        log.warning("Postgres schema init note: %s", err)
+        log.warning("Database schema init note: %s", err)
 
 
 
