@@ -31,6 +31,10 @@ def _build_engine_args(raw_url: str) -> tuple[str, dict]:
     parts = urlsplit(raw_url)
 
     scheme = parts.scheme
+    if scheme in ("sqlite", "sqlite+aiosqlite"):
+        clean_url = raw_url if raw_url.startswith("sqlite+aiosqlite") else raw_url.replace("sqlite://", "sqlite+aiosqlite://")
+        return clean_url, {}
+
     if scheme in ("postgres", "postgresql"):
         scheme = "postgresql+asyncpg"
 
