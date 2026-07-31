@@ -46,10 +46,22 @@ async def submit(
 @router.post("/extract")
 async def extract(
     file: UploadFile = File(...),
-    _: AuthUser = Depends(_hospital),
+    _: AuthUser = Depends(_all_roles),
 ):
+    if not file:
+        raise bad_request("No file uploaded")
+    content_type = file.content_type or "image/jpeg"
+    allowed_types = {"image/jpeg", "image/png", "image/webp", "image/heic", "image/jpg", "application/pdf"}
+    if content_type not in allowed_types and not content_type.startswith("image/"):
+        raise bad_request("Invalid file type. Allowed formats: JPEG, PNG, WEBP, HEIC, PDF.")
+    
     data = await file.read()
-    return await claims_service.extract_document(data, file.content_type)
+    if not data or len(data) == 0:
+        raise bad_request("Uploaded file is empty.")
+    if len(data) > 10 * 1024 * 1024:
+        raise bad_request("File size exceeds maximum allowed limit of 10MB.")
+        
+    return await claims_service.extract_document(data, content_type)
 
 
 @router.get("")
