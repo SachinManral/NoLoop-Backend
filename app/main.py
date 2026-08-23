@@ -98,9 +98,13 @@ async def init_postgres_schema():
 
 
 
+from app.auto_seed import auto_seed_if_empty
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     await init_postgres_schema()
+    await auto_seed_if_empty()
     yield
     await engine.dispose()
 
